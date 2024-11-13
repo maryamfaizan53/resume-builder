@@ -1,113 +1,160 @@
-import html2pdf from 'html2pdf.js';
+import * as html2pdf from "html2pdf.js";
 
-// Wait for the DOM content to load before accessing elements
-document.addEventListener("DOMContentLoaded", () => {
-    // Select form inputs and containers
-    const nameInput = document.getElementById("name") as HTMLInputElement;
-    const positionInput = document.getElementById("position") as HTMLInputElement;
-    const phoneInput = document.getElementById("phone") as HTMLInputElement;
-    const emailInput = document.getElementById("email") as HTMLInputElement;
-    const addressInput = document.getElementById("address") as HTMLInputElement;
-    const educationContainer = document.getElementById("education-container") as HTMLElement;
-    const experienceContainer = document.getElementById("experience-container") as HTMLElement;
-    const skillsInput = document.getElementById("skills") as HTMLInputElement;
-    const resumePreview = document.getElementById("resumePreview") as HTMLElement;
+// Function to generate the resume dynamically based on the form inputs
+function generateResume() {
+    const name = (document.getElementById("name") as HTMLInputElement).value;
+    const position = (document.getElementById("position") as HTMLInputElement).value;
+    const phone = (document.getElementById("phone") as HTMLInputElement).value;
+    const email = (document.getElementById("email") as HTMLInputElement).value;
+    const address = (document.getElementById("address") as HTMLInputElement).value;
+    const education = (document.getElementById("education") as HTMLInputElement).value;
+    const languages = (document.getElementById("languages") as HTMLInputElement).value;
+    const skills = (document.getElementById("skills") as HTMLInputElement).value;
+    const experience = (document.getElementById("experience") as HTMLInputElement).value;
 
-    // Buttons
-    const addEducationBtn = document.getElementById("addEducationBtn") as HTMLButtonElement;
-    const addExperienceBtn = document.getElementById("addExperienceBtn") as HTMLButtonElement;
-    const generateBtn = document.querySelector("button[onclick='generateResume()']") as HTMLButtonElement;
-    const saveBtn = document.querySelector("button[onclick='saveToLocalStorage()']") as HTMLButtonElement;
-    const downloadBtn = document.querySelector("button[onclick='downloadPDF()']") as HTMLButtonElement;
-    const editBtn = document.createElement("button") as HTMLButtonElement;
+    const profileImage = (document.getElementById("image-input") as HTMLInputElement).files?.[0];
 
-    // Append edit button and set initial properties
-    editBtn.id = "editBtn";
-    editBtn.textContent = "Enable Edit";
-    document.body.appendChild(editBtn);
+    const preview = document.getElementById("resumePreview") as HTMLElement;
 
-    // Function to update the resume preview in real-time
-    function updatePreview(): void {
-        resumePreview.innerHTML = `
-            <h2>About</h2>
-            <p><strong>Name:</strong> ${nameInput.value} </p>
-            <p><strong>Email:</strong> ${emailInput.value}</p>
-            <p><strong>Phone:</strong> ${phoneInput.value}</p>
-            <p><strong>Address:</strong> ${addressInput.value}</p>
+    // Create a new FileReader instance to read the image
+    const reader = new FileReader();
 
-            <h2>Education</h2>
-            <div>${educationContainer.innerHTML}</div>
+    reader.onloadend = () => {
+        // Set the HTML for resume preview with form data
+        preview.innerHTML = `
+        <div class="left-section">
+            <div class="profile-picture">
+                <img src="${reader.result}" alt="Profile Picture" />
+            </div>
+            <div class="section">
+                <h2>Profile</h2>
+                <p contenteditable="true" oninput="updateField('profile', this.textContent)">${position}</p>
+            </div>
+            <div class="section">
+                <h2>Contact Me</h2>
+                <p contenteditable="true" oninput="updateField('phone', this.textContent)"><strong>Phone:</strong> ${phone}</p>
+                <p contenteditable="true" oninput="updateField('email', this.textContent)"><strong>Email:</strong> ${email}</p>
+                <p contenteditable="true" oninput="updateField('address', this.textContent)"><strong>Address:</strong> ${address}</p>
+            </div>
+        </div>
+        <div class="right-section">
+            <div class="header">
+                <h1 contenteditable="true" oninput="updateField('name', this.textContent)">${name}</h1>
+                <p contenteditable="true" oninput="updateField('position', this.textContent)">${position}</p>
+            </div>
+            <div class="section">
+                <h2><img src="/icons8-sort-right-48.png" alt="arrow icon" height="20px" width="20px">Education</h2>
+                <p contenteditable="true" oninput="updateField('education', this.textContent)">${education}</p>
+            </div>
+            <div class="section">
+                <h2><img src="/icons8-sort-right-48.png" alt="arrow icon" height="20px" width="20px">Languages</h2>
+                <p contenteditable="true" oninput="updateField('languages', this.textContent)">${languages}</p>
+            </div>
+            <div class="section">
+                <h2><img src="/icons8-sort-right-48.png" alt="arrow icon" height="20px" width="20px">Skills</h2>
+                <p contenteditable="true" oninput="updateField('skills', this.textContent)">${skills}</p>
+            </div>
+            <div class="section">
+                <h2><img src="/icons8-sort-right-48.png" alt="arrow icon" height="20px" width="20px">Experience</h2>
+                <p contenteditable="true" oninput="updateField('experience', this.textContent)">${experience}</p>
+            </div>
+        </div>
+    `;
+    };
 
-            <h2>Skills</h2>
-            <p>${skillsInput.value}</p>
+    // If no image is selected, use a default image
+    if (profileImage) {
+        reader.readAsDataURL(profileImage);
+    } else {
+        preview.innerHTML = `
+        <div class="left-section">
+            <div class="profile-picture">
+                <img src="p.png" alt="Profile Picture" />
+            </div>
+            <div class="section">
+                <h2>Profile</h2>
+                <p contenteditable="true" oninput="updateField('profile', this.textContent)">${position}</p>
+            </div>
+            <div class="section">
+                <h2>Contact Me</h2>
+                <p contenteditable="true" oninput="updateField('phone', this.textContent)"><strong>Phone:</strong> ${phone}</p>
+                <p contenteditable="true" oninput="updateField('email', this.textContent)"><strong>Email:</strong> ${email}</p>
+                <p contenteditable="true" oninput="updateField('address', this.textContent)"><strong>Address:</strong> ${address}</p>
+            </div>
+        </div>
+        <div class="right-section">
+            <div class="header">
+                <h1 contenteditable="true" oninput="updateField('name', this.textContent)">${name}</h1>
+                <p contenteditable="true" oninput="updateField('position', this.textContent)">${position}</p>
+            </div>
+            <div class="section">
+                <h2><img src="/icons8-sort-right-48.png" alt="arrow icon" height="20px" width="20px">Education</h2>
+                <p contenteditable="true" oninput="updateField('education', this.textContent)">${education}</p>
+            </div>
+            <div class="section">
+                <h2><img src="/icons8-sort-right-48.png" alt="arrow icon" height="20px" width="20px">Languages</h2>
+                <p contenteditable="true" oninput="updateField('languages', this.textContent)">${languages}</p>
+            </div>
+            <div class="section">
+                <h2><img src="/icons8-sort-right-48.png" alt="arrow icon" height="20px" width="20px">Skills</h2>
+                <p contenteditable="true" oninput="updateField('skills', this.textContent)">${skills}</p>
+            </div>
+            <div class="section">
+                <h2><img src="/icons8-sort-right-48.png" alt="arrow icon" height="20px" width="20px">Experience</h2>
+                <p contenteditable="true" oninput="updateField('experience', this.textContent)">${experience}</p>
+            </div>
+        </div>
+    `;
+}
+}
 
-            <h2>Experience</h2>
-            <div>${experienceContainer.innerHTML}</div>
-        `;
+// Function to update editable fields dynamically
+function updateField(field: string, value: string | null) {
+    if (value !== null) {
+        const formField = document.getElementById(field) as HTMLInputElement;
+        if (formField) formField.value = value;
     }
+}
 
-    // Event listener for Add Education button
-    addEducationBtn.addEventListener("click", () => {
-        const educationDiv = document.createElement("div");
-        educationDiv.innerHTML = `
-            <input type="text" placeholder="Degree">
-            <input type="text" placeholder="Institution">
-            <input type="text" placeholder="Year">
-        `;
-        educationContainer.appendChild(educationDiv);
-        updatePreview();
-    });
+// Function to save the data to local storage
+function saveToLocalStorage() {
+    const resumeData = {
+        name: (document.getElementById("name") as HTMLInputElement).value,
+        position: (document.getElementById("position") as HTMLInputElement).value,
+        phone: (document.getElementById("phone") as HTMLInputElement).value,
+        email: (document.getElementById("email") as HTMLInputElement).value,
+        address: (document.getElementById("address") as HTMLInputElement).value,
+        education: (document.getElementById("education") as HTMLInputElement).value,
+        languages: (document.getElementById("languages") as HTMLInputElement).value,
+        skills: (document.getElementById("skills") as HTMLInputElement).value,
+        experience: (document.getElementById("experience") as HTMLInputElement).value,
+    };
+    localStorage.setItem("resumeData", JSON.stringify(resumeData));
+    alert("Resume data saved to local storage.");
+}
 
-    // Event listener for Add Experience button
-    addExperienceBtn.addEventListener("click", () => {
-        const experienceDiv = document.createElement("div");
-        experienceDiv.innerHTML = `
-            <input type="text" placeholder="Job Title">
-            <input type="text" placeholder="Company">
-            <input type="text" placeholder="Years">
-        `;
-        experienceContainer.appendChild(experienceDiv);
-        updatePreview();
-    });
-
-    // Event listener to toggle edit mode
-    editBtn.addEventListener("click", () => {
-        const isEditable = resumePreview.getAttribute("contenteditable") === "true";
-        resumePreview.setAttribute("contenteditable", String(!isEditable));
-        editBtn.textContent = !isEditable ? "Disable Edit" : "Enable Edit";
-    });
-
-    // Event listener to update preview on Generate Resume button click
-    generateBtn.addEventListener("click", updatePreview);
-
-    // Download resume as PDF
-    downloadBtn.addEventListener("click", () => {
-        const opt = {
-            margin: 0.5,
-            filename: 'resume.pdf',
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2 },
-            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-        };
-        html2pdf().from(resumePreview).set(opt).save();
-    });
-
-    // Function to save the data to local storage
-    function saveToLocalStorage() {
-        const resumeData = {
-            name: nameInput.value,
-            position: positionInput.value,
-            phone: phoneInput.value,
-            email: emailInput.value,
-            address: addressInput.value,
-            education: educationContainer.innerHTML,
-            skills: skillsInput.value,
-            experience: experienceContainer.innerHTML
-        };
-        localStorage.setItem("resumeData", JSON.stringify(resumeData));
-        alert("Resume data saved to local storage.");
+// Function to download the resume as PDF
+function downloadPDF() {
+    const element = document.getElementById("resumePreview");
+    if (element) {
+        html2pdf()
+            .from(element)
+            .save("resume.pdf");
     }
+}
 
-    // Attach save function to Save button
-    saveBtn.addEventListener("click", saveToLocalStorage);
-});
+// Load data from local storage and populate the form
+window.onload = () => {
+    const savedData = JSON.parse(localStorage.getItem("resumeData") || "{}");
+
+    (document.getElementById("name") as HTMLInputElement).value = savedData.name || "";
+    (document.getElementById("position") as HTMLInputElement).value = savedData.position || "";
+    (document.getElementById("phone") as HTMLInputElement).value = savedData.phone || "";
+    (document.getElementById("email") as HTMLInputElement).value = savedData.email || "";
+    (document.getElementById("address") as HTMLInputElement).value = savedData.address || "";
+    (document.getElementById("education") as HTMLInputElement).value = savedData.education || "";
+    (document.getElementById("languages") as HTMLInputElement).value = savedData.languages || "";
+    (document.getElementById("skills") as HTMLInputElement).value = savedData.skills || "";
+    (document.getElementById("experience") as HTMLInputElement).value = savedData.experience || "";
+    generateResume(); // Generate preview with saved data
+};

@@ -1,0 +1,50 @@
+# Node.js dependencies
+node_modules/
+npm-debug.log
+yarn-error.log
+pnpm-debug.log
+
+# Build output directories
+dist/
+build/
+out/
+.cache/
+
+# TypeScript files
+*.tsbuildinfo
+
+# Environment variables and sensitive files
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs/
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# Git files
+*.orig
+
+# Temporary files
+tmp/
+temp/
+
+# Specific to html2pdf.js or other generated files
+*.pdf
+generated_pdfs/
+
+# Miscellaneous
+coverage/        # Output coverage files
+docs/            # Documentation files generated

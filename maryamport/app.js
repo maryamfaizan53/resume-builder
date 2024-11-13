@@ -1,107 +1,78 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const html2pdf_js_1 = __importDefault(require("html2pdf.js"));
-// Wait for the DOM content to load before accessing elements
-document.addEventListener("DOMContentLoaded", () => {
-    // Select form inputs and containers
-    const nameInput = document.getElementById("name");
-    const positionInput = document.getElementById("position");
-    const phoneInput = document.getElementById("phone");
-    const emailInput = document.getElementById("email");
-    const addressInput = document.getElementById("address");
-    const educationContainer = document.getElementById("education-container");
-    const experienceContainer = document.getElementById("experience-container");
-    const skillsInput = document.getElementById("skills");
-    const resumePreview = document.getElementById("resumePreview");
-    // Buttons
-    const addEducationBtn = document.getElementById("addEducationBtn");
-    const addExperienceBtn = document.getElementById("addExperienceBtn");
-    const generateBtn = document.querySelector("button[onclick='generateResume()']");
-    const saveBtn = document.querySelector("button[onclick='saveToLocalStorage()']");
-    const downloadBtn = document.querySelector("button[onclick='downloadPDF()']");
-    const editBtn = document.createElement("button");
-    // Append edit button and set initial properties
-    editBtn.id = "editBtn";
-    editBtn.textContent = "Enable Edit";
-    document.body.appendChild(editBtn);
-    // Function to update the resume preview in real-time
-    function updatePreview() {
-        resumePreview.innerHTML = `
-            <h2>About</h2>
-            <p><strong>Name:</strong> ${nameInput.value} </p>
-            <p><strong>Email:</strong> ${emailInput.value}</p>
-            <p><strong>Phone:</strong> ${phoneInput.value}</p>
-            <p><strong>Address:</strong> ${addressInput.value}</p>
-
-            <h2>Education</h2>
-            <div>${educationContainer.innerHTML}</div>
-
-            <h2>Skills</h2>
-            <p>${skillsInput.value}</p>
-
-            <h2>Experience</h2>
-            <div>${experienceContainer.innerHTML}</div>
-        `;
+var html2pdf = require("html2pdf.js");
+// Function to generate the resume dynamically based on the form inputs
+function generateResume() {
+    var _a;
+    var name = document.getElementById("name").value;
+    var position = document.getElementById("position").value;
+    var phone = document.getElementById("phone").value;
+    var email = document.getElementById("email").value;
+    var address = document.getElementById("address").value;
+    var education = document.getElementById("education").value;
+    var languages = document.getElementById("languages").value;
+    var skills = document.getElementById("skills").value;
+    var experience = document.getElementById("experience").value;
+    var profileImage = (_a = document.getElementById("image-input").files) === null || _a === void 0 ? void 0 : _a[0];
+    var preview = document.getElementById("resumePreview");
+    // Create a new FileReader instance to read the image
+    var reader = new FileReader();
+    reader.onloadend = function () {
+        // Set the HTML for resume preview with form data
+        preview.innerHTML = "\n        <div class=\"left-section\">\n            <div class=\"profile-picture\">\n                <img src=\"".concat(reader.result, "\" alt=\"Profile Picture\" />\n            </div>\n            <div class=\"section\">\n                <h2>Profile</h2>\n                <p contenteditable=\"true\" oninput=\"updateField('profile', this.textContent)\">").concat(position, "</p>\n            </div>\n            <div class=\"section\">\n                <h2>Contact Me</h2>\n                <p contenteditable=\"true\" oninput=\"updateField('phone', this.textContent)\"><strong>Phone:</strong> ").concat(phone, "</p>\n                <p contenteditable=\"true\" oninput=\"updateField('email', this.textContent)\"><strong>Email:</strong> ").concat(email, "</p>\n                <p contenteditable=\"true\" oninput=\"updateField('address', this.textContent)\"><strong>Address:</strong> ").concat(address, "</p>\n            </div>\n        </div>\n        <div class=\"right-section\">\n            <div class=\"header\">\n                <h1 contenteditable=\"true\" oninput=\"updateField('name', this.textContent)\">").concat(name, "</h1>\n                <p contenteditable=\"true\" oninput=\"updateField('position', this.textContent)\">").concat(position, "</p>\n            </div>\n            <div class=\"section\">\n                <h2><img src=\"/icons8-sort-right-48.png\" alt=\"arrow icon\" height=\"20px\" width=\"20px\">Education</h2>\n                <p contenteditable=\"true\" oninput=\"updateField('education', this.textContent)\">").concat(education, "</p>\n            </div>\n            <div class=\"section\">\n                <h2><img src=\"/icons8-sort-right-48.png\" alt=\"arrow icon\" height=\"20px\" width=\"20px\">Languages</h2>\n                <p contenteditable=\"true\" oninput=\"updateField('languages', this.textContent)\">").concat(languages, "</p>\n            </div>\n            <div class=\"section\">\n                <h2><img src=\"/icons8-sort-right-48.png\" alt=\"arrow icon\" height=\"20px\" width=\"20px\">Skills</h2>\n                <p contenteditable=\"true\" oninput=\"updateField('skills', this.textContent)\">").concat(skills, "</p>\n            </div>\n            <div class=\"section\">\n                <h2><img src=\"/icons8-sort-right-48.png\" alt=\"arrow icon\" height=\"20px\" width=\"20px\">Experience</h2>\n                <p contenteditable=\"true\" oninput=\"updateField('experience', this.textContent)\">").concat(experience, "</p>\n            </div>\n        </div>\n    ");
+    };
+    // If no image is selected, use a default image
+    if (profileImage) {
+        reader.readAsDataURL(profileImage);
     }
-    // Event listener for Add Education button
-    addEducationBtn.addEventListener("click", () => {
-        const educationDiv = document.createElement("div");
-        educationDiv.innerHTML = `
-            <input type="text" placeholder="Degree">
-            <input type="text" placeholder="Institution">
-            <input type="text" placeholder="Year">
-        `;
-        educationContainer.appendChild(educationDiv);
-        updatePreview();
-    });
-    // Event listener for Add Experience button
-    addExperienceBtn.addEventListener("click", () => {
-        const experienceDiv = document.createElement("div");
-        experienceDiv.innerHTML = `
-            <input type="text" placeholder="Job Title">
-            <input type="text" placeholder="Company">
-            <input type="text" placeholder="Years">
-        `;
-        experienceContainer.appendChild(experienceDiv);
-        updatePreview();
-    });
-    // Event listener to toggle edit mode
-    editBtn.addEventListener("click", () => {
-        const isEditable = resumePreview.getAttribute("contenteditable") === "true";
-        resumePreview.setAttribute("contenteditable", String(!isEditable));
-        editBtn.textContent = !isEditable ? "Disable Edit" : "Enable Edit";
-    });
-    // Event listener to update preview on Generate Resume button click
-    generateBtn.addEventListener("click", updatePreview);
-    // Download resume as PDF
-    downloadBtn.addEventListener("click", () => {
-        const opt = {
-            margin: 0.5,
-            filename: 'resume.pdf',
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2 },
-            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-        };
-        (0, html2pdf_js_1.default)().from(resumePreview).set(opt).save();
-    });
-    // Function to save the data to local storage
-    function saveToLocalStorage() {
-        const resumeData = {
-            name: nameInput.value,
-            position: positionInput.value,
-            phone: phoneInput.value,
-            email: emailInput.value,
-            address: addressInput.value,
-            education: educationContainer.innerHTML,
-            skills: skillsInput.value,
-            experience: experienceContainer.innerHTML
-        };
-        localStorage.setItem("resumeData", JSON.stringify(resumeData));
-        alert("Resume data saved to local storage.");
+    else {
+        preview.innerHTML = "\n        <div class=\"left-section\">\n            <div class=\"profile-picture\">\n                <img src=\"p.png\" alt=\"Profile Picture\" />\n            </div>\n            <div class=\"section\">\n                <h2>Profile</h2>\n                <p contenteditable=\"true\" oninput=\"updateField('profile', this.textContent)\">".concat(position, "</p>\n            </div>\n            <div class=\"section\">\n                <h2>Contact Me</h2>\n                <p contenteditable=\"true\" oninput=\"updateField('phone', this.textContent)\"><strong>Phone:</strong> ").concat(phone, "</p>\n                <p contenteditable=\"true\" oninput=\"updateField('email', this.textContent)\"><strong>Email:</strong> ").concat(email, "</p>\n                <p contenteditable=\"true\" oninput=\"updateField('address', this.textContent)\"><strong>Address:</strong> ").concat(address, "</p>\n            </div>\n        </div>\n        <div class=\"right-section\">\n            <div class=\"header\">\n                <h1 contenteditable=\"true\" oninput=\"updateField('name', this.textContent)\">").concat(name, "</h1>\n                <p contenteditable=\"true\" oninput=\"updateField('position', this.textContent)\">").concat(position, "</p>\n            </div>\n            <div class=\"section\">\n                <h2><img src=\"/icons8-sort-right-48.png\" alt=\"arrow icon\" height=\"20px\" width=\"20px\">Education</h2>\n                <p contenteditable=\"true\" oninput=\"updateField('education', this.textContent)\">").concat(education, "</p>\n            </div>\n            <div class=\"section\">\n                <h2><img src=\"/icons8-sort-right-48.png\" alt=\"arrow icon\" height=\"20px\" width=\"20px\">Languages</h2>\n                <p contenteditable=\"true\" oninput=\"updateField('languages', this.textContent)\">").concat(languages, "</p>\n            </div>\n            <div class=\"section\">\n                <h2><img src=\"/icons8-sort-right-48.png\" alt=\"arrow icon\" height=\"20px\" width=\"20px\">Skills</h2>\n                <p contenteditable=\"true\" oninput=\"updateField('skills', this.textContent)\">").concat(skills, "</p>\n            </div>\n            <div class=\"section\">\n                <h2><img src=\"/icons8-sort-right-48.png\" alt=\"arrow icon\" height=\"20px\" width=\"20px\">Experience</h2>\n                <p contenteditable=\"true\" oninput=\"updateField('experience', this.textContent)\">").concat(experience, "</p>\n            </div>\n        </div>\n    ");
     }
-    // Attach save function to Save button
-    saveBtn.addEventListener("click", saveToLocalStorage);
-});
+}
+// Function to update editable fields dynamically
+function updateField(field, value) {
+    if (value !== null) {
+        var formField = document.getElementById(field);
+        if (formField)
+            formField.value = value;
+    }
+}
+// Function to save the data to local storage
+function saveToLocalStorage() {
+    var resumeData = {
+        name: document.getElementById("name").value,
+        position: document.getElementById("position").value,
+        phone: document.getElementById("phone").value,
+        email: document.getElementById("email").value,
+        address: document.getElementById("address").value,
+        education: document.getElementById("education").value,
+        languages: document.getElementById("languages").value,
+        skills: document.getElementById("skills").value,
+        experience: document.getElementById("experience").value,
+    };
+    localStorage.setItem("resumeData", JSON.stringify(resumeData));
+    alert("Resume data saved to local storage.");
+}
+// Function to download the resume as PDF
+function downloadPDF() {
+    var element = document.getElementById("resumePreview");
+    if (element) {
+        html2pdf()
+            .from(element)
+            .save("resume.pdf");
+    }
+}
+// Load data from local storage and populate the form
+window.onload = function () {
+    var savedData = JSON.parse(localStorage.getItem("resumeData") || "{}");
+    document.getElementById("name").value = savedData.name || "";
+    document.getElementById("position").value = savedData.position || "";
+    document.getElementById("phone").value = savedData.phone || "";
+    document.getElementById("email").value = savedData.email || "";
+    document.getElementById("address").value = savedData.address || "";
+    document.getElementById("education").value = savedData.education || "";
+    document.getElementById("languages").value = savedData.languages || "";
+    document.getElementById("skills").value = savedData.skills || "";
+    document.getElementById("experience").value = savedData.experience || "";
+    generateResume(); // Generate preview with saved data
+};
