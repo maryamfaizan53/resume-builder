@@ -43,19 +43,19 @@ function generateResume() {
                 <p contenteditable="true" oninput="updateField('position', this.textContent)">${position}</p>
             </div>
             <div class="section">
-                <h2><img src="/icons8-sort-right-48.png" alt="arrow icon" height="20px" width="20px">Education</h2>
+                <h2><img src="./icons8-sort-right-48.png" alt="arrow icon" height="20px" width="20px">Education</h2>
                 <p contenteditable="true" oninput="updateField('education', this.textContent)">${education}</p>
             </div>
             <div class="section">
-                <h2><img src="/icons8-sort-right-48.png" alt="arrow icon" height="20px" width="20px">Languages</h2>
+                <h2><img src="./icons8-sort-right-48.png" alt="arrow icon" height="20px" width="20px">Languages</h2>
                 <p contenteditable="true" oninput="updateField('languages', this.textContent)">${languages}</p>
             </div>
             <div class="section">
-                <h2><img src="/icons8-sort-right-48.png" alt="arrow icon" height="20px" width="20px">Skills</h2>
+                <h2><img src="./icons8-sort-right-48.png" alt="arrow icon" height="20px" width="20px">Skills</h2>
                 <p contenteditable="true" oninput="updateField('skills', this.textContent)">${skills}</p>
             </div>
             <div class="section">
-                <h2><img src="/icons8-sort-right-48.png" alt="arrow icon" height="20px" width="20px">Experience</h2>
+                <h2><img src="./icons8-sort-right-48.png" alt="arrow icon" height="20px" width="20px">Experience</h2>
                 <p contenteditable="true" oninput="updateField('experience', this.textContent)">${experience}</p>
             </div>
         </div>
